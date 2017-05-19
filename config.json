@@ -1,0 +1,17 @@
+{
+    "description": "Sample IPAM plugin for Docker",
+    "documentation": "https://docs.docker.com/engine/extend/plugins/",
+    "entrypoint": ["/docker-ipam-plugin"],
+    "env": [],
+    "interface": {
+        "socket": "sdip.sock",
+        "types": ["docker.ipamdriver/1.0"]
+    },
+    "linux": {
+        "capabilities": ["CAP_SYS_ADMIN","CAP_NET_ADMIN"]
+    },
+    "mounts": [],
+    "network": {
+        "type": "host"
+    }
+}

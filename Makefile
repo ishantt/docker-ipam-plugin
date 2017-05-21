@@ -1,6 +1,6 @@
 PLUGIN_NAME=ishant8/sdip
 
-all: clean build-image #build-plugin create-plugin
+all: clean build-image build-plugin create-plugin
 
 clean:
 	rm -rf ./plugin ./bin

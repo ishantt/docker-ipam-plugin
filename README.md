@@ -64,6 +64,8 @@ ID                  NAME                  DESCRIPTION                     ENABLE
 b42c13fbaea9        ishant8/sdip:latest   Sample IPAM plugin for Docker   true
 ```
 
+### 3) Test the plugin by creating a network
+
 Create a network with the plugin
 ```
 $ docker network create --ipam-driver ishant8/sdip:latest test

@@ -1,12 +1,16 @@
 FROM golang:1.7-alpine
 
-RUN set -ex && apk update && apk add gcc libc-dev git
+RUN set -ex && \
+    apk update && \
+    apk add gcc libc-dev git
 
-RUN go get github.com/docker/go-plugins-helpers/ipam
-RUN go get github.com/Sirupsen/logrus
+RUN go get github.com/docker/go-plugins-helpers/ipam && \
+    go get github.com/Sirupsen/logrus && \
+    go get github.com/davecgh/go-spew/spew
 
 COPY . /go/src/github.com/ishantt/docker-ipam-plugin
 WORKDIR /go/src/github.com/ishantt/docker-ipam-plugin
 
-RUN set -ex && go install
+RUN set -ex && \
+    go install
 CMD ["/go/bin/docker-ipam-plugin"]

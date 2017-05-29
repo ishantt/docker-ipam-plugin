@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Sirupsen/logrus"
+	"github.com/davecgh/go-spew/spew"
 	ipamApi "github.com/docker/go-plugins-helpers/ipam"
 	"net"
 )
@@ -13,9 +14,11 @@ const localAddressSpace = "LOCAL"
 const globalAddressSpace = "GLOBAL"
 const localAddressPool = "192.168.10.2/24"
 
+var scs = spew.ConfigState{Indent: "  "}
+
 type ipamDriver struct {
 	allocatedIPAddresses map[string]struct{}
-	networkAttocated     bool
+	networkAllocated     bool
 }
 
 func (i *ipamDriver) GetCapabilities() (*ipamApi.CapabilitiesResponse, error) {
@@ -34,11 +37,14 @@ func (i *ipamDriver) GetDefaultAddressSpaces() (*ipamApi.AddressSpacesResponse, 
 }
 
 func (i *ipamDriver) RequestPool(r *ipamApi.RequestPoolRequest) (*ipamApi.RequestPoolResponse, error) {
-	if !i.networkAttocated {
-		fmt.Println(r)
+	if !i.networkAllocated {
 		logrus.Infof("RequestPool called")
+
+		rFormatted := scs.Sdump(r)
+		logrus.Infof(rFormatted)
+
 		logrus.Infof("Pool: %s", localAddressPool)
-		i.networkAttocated = true
+		i.networkAllocated = true
 		return &ipamApi.RequestPoolResponse{PoolID: "1234", Pool: localAddressPool}, nil
 	}
 	return &ipamApi.RequestPoolResponse{}, errors.New("Pool Already Allocated")
@@ -46,17 +52,23 @@ func (i *ipamDriver) RequestPool(r *ipamApi.RequestPoolRequest) (*ipamApi.Reques
 
 func (i *ipamDriver) ReleasePool(r *ipamApi.ReleasePoolRequest) error {
 	logrus.Infof("ReleasePool called")
+
+	rFormatted := scs.Sdump(r)
+	logrus.Infof(rFormatted)
+
 	if r.PoolID == "1234" {
 		logrus.Infof("Releasing Pool")
-		i.networkAttocated = false
+		i.networkAllocated = false
 		i.allocatedIPAddresses = make(map[string]struct{})
 	}
 	return nil
 }
 
 func (i *ipamDriver) RequestAddress(r *ipamApi.RequestAddressRequest) (*ipamApi.RequestAddressResponse, error) {
-	fmt.Println(r)
 	logrus.Infof("RequestAddress called")
+
+	rFormatted := scs.Sdump(r)
+	logrus.Infof(rFormatted)
 
 	addr := i.getNextIP()
 	addr = fmt.Sprintf("%s/%s", addr, "24")
@@ -66,6 +78,9 @@ func (i *ipamDriver) RequestAddress(r *ipamApi.RequestAddressRequest) (*ipamApi.
 
 func (i *ipamDriver) ReleaseAddress(r *ipamApi.ReleaseAddressRequest) error {
 	logrus.Infof("ReleaseAddress called")
+
+	rFormatted := scs.Sdump(r)
+	logrus.Infof(rFormatted)
 
 	delete(i.allocatedIPAddresses, r.Address)
 	if _, ok := i.allocatedIPAddresses[r.Address]; !ok {

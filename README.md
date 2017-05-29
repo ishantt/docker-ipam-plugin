@@ -1,33 +1,35 @@
 # docker-ipam-plugin
 A sample docker IPAM plugin
 
-This plugin is created just to demonstate a example of Docker IPAM Plugin.
+This plugin is created just to demonstrate a example of Docker IPAM Plugin.
 
 
 ## Installation and Usage
-### 1) To Run the plugin as a external container (legacy plugin)
-
+### 1) Run the plugin as Docker Managed Plugin (V2 Plugin)
 ```
 git clone http://github.com/ishantt/docker-ipam-plugin
 cd docker-ipam-plugin
-make build-image
+make all
 ```
 
-This will build a image with name ishant8/sdip:rootfs
+This will install and enable the docker plugin.
 
-To run the plugin container execute
-
+### 2) Check the plugin status 
 ```
-docker run -v /run/docker:/run/docker ishant8/sdip:rootfs
-```
-
-Create a network with the IPAM Driver 
-
-```
-docker network create --ipam-driver sdip net1
+$ docker plugin ls
+ID                  NAME                  DESCRIPTION                     ENABLED
+b42c13fbaea9        ishant8/sdip:latest   Sample IPAM plugin for Docker   true
 ```
 
-Use this network to launch a container
+### 3) Test the plugin by creating a network
+
+Create a network with the plugin
+```
+$ docker network create --ipam-driver ishant8/sdip:latest test
+```
+Check your syslog for results
+
+### 4) Use this network to launch a container
 ```
 $ docker run -it --network net1 alpine sh
 / # ip a
@@ -44,36 +46,7 @@ $ docker run -it --network net1 alpine sh
     inet6 fe80::42:3dff:fe38:b89d/64 scope link
        valid_lft forever preferred_lft forever
 / #
-
 ```
-
-
-### 2) To Run the plugin as Docker Managed Plugin (V2 Plugin)
-```
-git clone http://github.com/ishantt/docker-ipam-plugin
-cd docker-ipam-plugin
-make all
-```
-
-This will install and enable the docker plugin.
-
-To see the plugin status execute
-```
-$ docker plugin ls
-ID                  NAME                  DESCRIPTION                     ENABLED
-b42c13fbaea9        ishant8/sdip:latest   Sample IPAM plugin for Docker   true
-```
-
-### 3) Test the plugin by creating a network
-
-Create a network with the plugin
-```
-$ docker network create --ipam-driver ishant8/sdip:latest test
-```
-
-Check your syslog for results
-
-This is still a WIP
 
 ## References
 1) https://github.com/vieux/docker-volume-sshfs

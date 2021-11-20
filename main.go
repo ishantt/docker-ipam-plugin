@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
 	ipamApi "github.com/docker/go-plugins-helpers/ipam"
 	"net"
